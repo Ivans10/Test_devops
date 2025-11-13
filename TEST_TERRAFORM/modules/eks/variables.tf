@@ -1,3 +1,18 @@
+variable "cluster_name" {
+  description = "EKS-TEST"
+  type        = string
+}
+
+variable "vpc_id" {
+  description = "ID VPC-EKS-TEST"
+  type        = string
+}
+
+variable "subnet_ids" {
+  description = "ID Subnet EKS-TEST"
+  type        = list(string)
+}
+
 variable "cidr_block" {
   description = "CIDR block for the VPC."
   type        = string
@@ -16,4 +31,16 @@ variable "availability_zone" {
 variable "environment" {
   description = "Environment name TEST."
   type        = string
+}
+
+variable "prefix_name" {
+  type = string
+}
+
+variable "transit_gateway_id" {
+  type = string
+}
+
+variable "default_tags" {
+  type = map(string)
 }

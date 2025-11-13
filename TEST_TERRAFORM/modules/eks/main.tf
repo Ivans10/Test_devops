@@ -1,3 +1,4 @@
+# https://spacelift.io/blog/terraform-eks
 # Configurazione del cluster EKS: modules/eks/kubernetes.tf 
 resource "aws_eks_cluster" "eks_test" {
   name = var.cluster_name
@@ -69,4 +70,56 @@ resource "aws_iam_role_policy_attachment" "eks_cluster" {
 resource "aws_iam_role_policy_attachment" "eks_node" {
   policy_arn = "arn:aws:iam::aws:policy/AmazonEKSServicePolicy"
   role       = aws_iam_role.eks_node.name
+}
+
+resource "aws_vpc" "main" {
+  cidr_block = var.cidr_block
+  tags = {
+    Name = "${var.environment}-vpc"
+  }
+}
+
+resource "aws_nat_gateway" "NGW" {
+  allocation_id = aws_eip.NGW-EIP-A.id
+  subnet_id     = aws_subnet.EGRESS-PUBLIC-A.id
+
+  tags = {
+    Name = join("", [var.prefix_name, "-egress-ngw"])
+  }
+
+  # To ensure proper ordering, it is recommended to add an explicit dependency
+  # on the Internet Gateway for the VPC.
+  depends_on = [aws_internet_gateway.EGRESS-IGW]
+}
+
+resource "aws_internet_gateway" "EGRESS-IGW" {
+  vpc_id = aws_vpc.EGRESS-VPC.id
+
+  tags = merge(var.default_tags, {
+    Name = join("", [var.prefix_name, "-egress-igw"])
+  })
+}
+
+# Route tables for the public subnets where there is the NAT 
+resource "aws_route_table" "EGRESS-PUBLIC-RT" {
+  vpc_id = aws_vpc.EGRESS-VPC.id
+  route {
+    cidr_block = "0.0.0.0/0"
+    gateway_id = aws_internet_gateway.EGRESS-IGW.id
+  }
+  route {
+    cidr_block         = "10.0.0.0/8"
+    transit_gateway_id = var.transit_gateway_id
+  }
+  route {
+    cidr_block         = "172.16.0.0/12"
+    transit_gateway_id = var.transit_gateway_id
+  }
+  route {
+    cidr_block         = "192.168.0.0/16"
+    transit_gateway_id = var.transit_gateway_id
+  }
+  tags = merge(var.default_tags, {
+    Name = join("", [var.prefix_name, "-egress-public-rt"])
+  })
 }
