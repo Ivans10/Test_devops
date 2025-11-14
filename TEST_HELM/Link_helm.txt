@@ -1,3 +1,9 @@
 # https://dev.to/adesoji1/using-helm-to-deploy-a-frontend-and-backend-application-2j2p
 
 # https://github.com/Adesoji1/Deploy-Web-App-Using-Helm/blob/main/alu/helm/values.yaml
+
+# Repo:
+    https://github.com/devopsjourney1/helm-webapp/blob/main/solution/webapp1/templates/NOTES.txt
+
+servicename=$(k get service -l "app={{ .Values.appName }}" -o jsonpath="{.items[0].metadata.name}")
+kubectl --namespace {{ .Values.namespace}} port-forward service/{{ .Values.appName }} 8888:80

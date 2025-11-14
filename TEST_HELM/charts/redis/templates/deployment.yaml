@@ -1,0 +1,25 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Values.appName }}
+  namespace: {{ .Values.namespace }}
+  labels:
+    app: {{ .Values.appName }}
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: {{ .Values.appName }}
+      tier: postgres
+  template:
+    metadata:
+      labels:
+        app: {{ .Values.appName }}
+        tier: postgres
+    spec: 
+      serviceAccountName: {{ template "devportal.serviceAccountName" . }}
+      containers:
+        - name: test_postgres
+          image: "{{ .Values.image.name }}:{{ .Values.image.tag }}"
+          ports:
+            - containerPort: {{ .Values.db.port }}

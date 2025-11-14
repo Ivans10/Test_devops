@@ -1,10 +1,10 @@
-appName: redis
+appName: backend
 port: 80
 namespace: default
 configmap:
-  name: redis-configmap-v1
+  name: backend-configmap-v1
   data:
     CUSTOM_HEADER: 'Test helm!'
 image:
-  name: redis
+  name: backed
   tag: latest

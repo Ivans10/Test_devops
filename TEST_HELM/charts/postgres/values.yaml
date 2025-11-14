@@ -1,0 +1,17 @@
+appName: postgres
+port: 80
+namespace: default
+configmap:
+  name: postgres-configmap-v1
+  data:
+    CUSTOM_HEADER: 'Test helm!'
+image:
+  name: postgres
+  tag: latest
+db:
+  type: psq
+  external: false
+  name: test-postgres
+  host: postgres.test.svc
+  port: 5432
+ 
