@@ -1,5 +1,9 @@
 namespace: stage
-
-configmap:
-  data:
-    CUSTOM_HEADER: 'STAGE environment!'
+appName: redis
+port: 80
+image:
+  name: redis
+  tag: latest
+service:
+  metadata:
+    name: postgres-svc

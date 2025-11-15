@@ -1,0 +1,10 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: backend-config-map
+  namespace: {{ .Value.namespace }}
+data:
+  k8s: |
+    url = "mysql://root:s3cr37p455@dbhostname.io:3306/db"
+  valore_iniziale: 1
+  valore_finale: 10

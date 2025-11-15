@@ -1,6 +1,6 @@
+namespace: dev
 appName: frontend
 port: 80
-namespace: default
 configmap:
   name: frontend-configmap-v1
   data:
@@ -13,4 +13,4 @@ service:
 ingress:
   name: frontend-ingress
   host:
-    name: "localhost"
+    name: "api.example.com"

@@ -1,26 +1,72 @@
+apiVersion: storage.k8s.io/v1
+kind: StorageClass
+metadata:
+  annotations:
+    storageclass.kubernetes.io/is-default-class: "true"
+  name: postgres-storageclass
+  namespace: {{ .Values.namespace }}
+  labels:
+    app: {{ .Values.appName }}
+parameters:
+  fsType: ext4
+  type: gp3
+provisioner: kubernetes.io/aws-ebs
+reclaimPolicy: Retain
+allowVolumeExpansion: true
+volumeBindingMode: WaitForFirstConsumer  
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: postgres-data-pv
+  namespace: {{ .Values.namespace }}
+spec:
+  storageClassName: redis-storageclass
+  claimRef:
+    name: postgres-data-pvc
+---
+kind: PersistentVolumeClaim
+apiVersion: v1
+metadata:
+   name: postgres-data-pvc
+   namespace: {{ .Values.namespace }}
+   labels:
+    app: postgres
+spec:
+   accessModes:
+   - ReadWriteOnce
+   resources:
+    requests:
+      storage: 10Gi
+   storageClassName: default-storageclass
+   volumeName: postgres-data-pv
+---
 apiVersion: apps/v1
-kind: Deployment
+kind: StatefulSet
 metadata:
   name: {{ .Values.appName }}
   namespace: {{ .Values.namespace }}
   labels:
     app: {{ .Values.appName }}
+    access: "true"
 spec:
+  serviceName: {{ .Values.service.metadata.name }}
   replicas: 2
   selector:
     matchLabels:
       app: {{ .Values.appName }}
+      access: "true"
       tier: postgres
   template:
     metadata:
       labels:
         app: {{ .Values.appName }}
+        access: "true"
         tier: postgres
     spec: 
-      serviceAccountName: {{ template "devportal.serviceAccountName" . }}
       containers:
         - name: test_postgres
-          image: "{{ .Values.image.name }}:{{ .Values.image.tag }}"
+          image: {{ .Values.image.name }}:{{ .Values.image.tag }}
           ports:
             - containerPort: {{ .Values.db.port }}
           readinessProbe:
@@ -35,3 +81,10 @@ spec:
             periodSeconds: 10
             successThreshold: 1
             timeoutSeconds: 5
+          volumeMounts:
+          - name: postgres-data-pv
+            mountPath: /var/lib/postgresql/data
+      volumes:
+        - name: postgres-data-pv
+          persistentVolumeClaim:
+            claimName: postgres-data-pvc

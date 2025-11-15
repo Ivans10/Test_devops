@@ -11,6 +11,6 @@ spec:
     protocol: TCP
     name: frontend-port
   selector:
-    app: {{ .Values.appName }}
-    tier: frontend
+    app: frontend
+    tier: {{ .Values.appName }}
   type: LoadBalancer

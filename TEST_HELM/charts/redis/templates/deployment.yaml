@@ -1,25 +1,99 @@
+apiVersion: storage.k8s.io/v1
+kind: StorageClass
+metadata:
+  name: redis-storageclass
+  namespace: {{ .Values.namespace }}
+  annotations:
+    storageclass.kubernetes.io/is-default-class: "true"
+  labels:
+    app: {{ .Values.appName }}
+parameters:
+reclaimPolicy: Delete
+volumeBindingMode: Immediate
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: redis-data-pv
+  namespace: {{ .Values.namespace }}
+spec:
+  storageClassName: redis-storageclass
+  claimRef:
+    name: redis-data-pvc
+---
+kind: PersistentVolumeClaim
+apiVersion: v1
+metadata:
+   name: redis-data-pvc
+   namespace: {{ .Values.namespace }}
+   labels:
+    app: redis
+spec:
+   accessModes:
+   - ReadWriteOnce
+   resources:
+    requests:
+      storage: 5Gi
+   storageClassName: default-storageclass
+   volumeName: redis-data-pv
+---
 apiVersion: apps/v1
-kind: Deployment
+kind: StatefulSet
 metadata:
   name: {{ .Values.appName }}
   namespace: {{ .Values.namespace }}
   labels:
     app: {{ .Values.appName }}
+    access: "true"
 spec:
+  serviceName: {{ .Values.service.metadata.name }}
   replicas: 2
   selector:
     matchLabels:
       app: {{ .Values.appName }}
-      tier: postgres
+      access: "true"
+      tier: redis
   template:
     metadata:
       labels:
         app: {{ .Values.appName }}
-        tier: postgres
+        access: "true"
+        tier: redis
     spec: 
-      serviceAccountName: {{ template "devportal.serviceAccountName" . }}
+      terminationGracePeriodSeconds: 30
       containers:
-        - name: test_postgres
-          image: "{{ .Values.image.name }}:{{ .Values.image.tag }}"
+        - name: {{ .Values.appName }}
+          image: {{ .Values.image.name }}:{{ .Values.image.tag }}
+          command: ["redis-server"]
+          args:
+            - "--port"
+            - "6379"
+            - "--dir"
+            - "/mnt/redis-data/data"
+            - "--logfile"
+            - "/mnt/redis/redi-log/redis-server.log"
+            - "--appendonly"
+            - "yes"
+            - "--requirepass"
+            - "$(REDIS_PASSWORD)"
           ports:
-            - containerPort: {{ .Values.db.port }}
+          - containerPort: 6379
+          env:
+          - name: REDIS_PASSWORD
+            valueFrom:
+              secretKeyRef:
+                name: redis-secret
+                key: REDIS_PASSWORD
+          volumeMounts:
+            - name: redis-data-pv
+              mountPath: /mnt/redis-data/data
+            - name: redis-data-pv
+              mountPath: /mnt/redis-log/log
+            - name: redis-data-pv
+              mountPath: /var/opt/redis
+            - name: redis-data-pv
+              mountPath: /mnt/redis-backup/redisbackup
+      volumes:
+        - name: redis-data-pv
+          persistentVolumeClaim:
+            claimName: redis-data-pvc

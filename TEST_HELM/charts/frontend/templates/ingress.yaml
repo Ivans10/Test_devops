@@ -2,15 +2,21 @@ apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
   name: {{ .Values.ingress.name }}
+  namespace: {{ .Values.namespace }}
   annotations:
     nginx.ingress.kubernetes.io/rewrite-target: /
+    nginx.ingress.kubernetes.io/ingress-controller-name: AWS-ALB
 spec:
-  ingressClassName: frontend
+  ingressClassName: AWS-ALB
+  tls:
+  - hosts:
+      - {{ .Values.ingress.host.name }}
+    secretName: ingress-secret-tls
   rules:
   - host: {{ .Values.ingress.host.name }}
     http:
       paths:
-      - path: /
+      - path: /api/*
         pathType: Prefix
         backend:
           service:

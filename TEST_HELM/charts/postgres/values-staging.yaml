@@ -1,5 +1,19 @@
 namespace: stage
-
+appName: postgres
+port: 80
 configmap:
+  name: postgres-configmap-v1
   data:
-    CUSTOM_HEADER: 'STAGE environment!'
+    CUSTOM_HEADER: 'Test helm!'
+image:
+  name: postgres
+  tag: latest
+db:
+  type: psq
+  external: false
+  name: test-postgres
+  host: postgres.test.svc
+  port: 5432
+service:
+  metadata:
+    name: postgres-svc

@@ -1,5 +1,14 @@
 namespace: prod
-
+appName: backend
+port: 80
 configmap:
-  data:
-    CUSTOM_HEADER: 'PROD environment!'
+  name: backend-config-map
+image:
+  name: backend
+  tag: latest
+service:
+  name: backend
+ingress:
+  name: backend-ingress
+  host:
+    name: "localhost"

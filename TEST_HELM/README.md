@@ -3,7 +3,14 @@
 ```
 helm create webapp1
 ```
+# Create default/stage/prod
 
+k create namespace dev```
+k create namespace staging
+k create namespace prod
+helm install mywebapp-release-dev webapp1/ --values webapp1/values.yaml -f webapp1/values-dev.yaml -n dev
+helm install mywebapp-release-prod webapp1/ --values webapp1/values.yaml -f webapp1/values-prod.yaml -n prod
+helm ls --all-namespaces
 
 # Follow along with the video
 - Create the files per the video, copying and pasting from templates-original
@@ -24,11 +31,5 @@ helm upgrade mywebapp-release webapp1/ --values mywebapp/values.yaml
 minikube tunnel
 ```
 
-# Create dev/prod
-```
-k create namespace dev
-k create namespace prod
-helm install mywebapp-release-dev webapp1/ --values webapp1/values.yaml -f webapp1/values-dev.yaml -n dev
-helm install mywebapp-release-prod webapp1/ --values webapp1/values.yaml -f webapp1/values-prod.yaml -n prod
-helm ls --all-namespaces
+
 ```

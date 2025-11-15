@@ -5,26 +5,33 @@ metadata:
   namespace: {{ .Values.namespace }}
   labels:
     app: {{ .Values.appName }}
+    access: "true"
 spec:
   replicas: 5
   selector:
     matchLabels:
       app: {{ .Values.appName }}
+      access: "true"
       tier: frontend
   template:
     metadata:
       labels:
         app: {{ .Values.appName }}
+        access: "true"
         tier: frontend
     spec: 
       containers:
       - name: mycontainer_frontend
-        image: "{{ .Values.image.name }}:{{ .Values.image.tag }}"
+        image: {{ .Values.image.name }}:{{ .Values.image.tag }}
         ports:
         - containerPort: 80
         envFrom:
         - configMapRef:
             name: {{ .Values.configmap.name }}
+        volumes:
+          - name: secret-volume
+            secret:
+              secretName: frontend-secret
         resources:
           requests:
             memory: "16Mi" 
@@ -45,3 +52,14 @@ spec:
             path: /ready
             port: 80
           successThreshold: 3
+---
+apiVersion: policy/v1
+kind: PodDisruptionBudget
+metadata:
+  name: frontend-pdb
+  namespace: {{ .Values.namespace }}
+spec:
+  minAvailable: 2
+  selector:
+    matchLabels:
+      app: {{ .Values.appName }}
