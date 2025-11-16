@@ -9,8 +9,9 @@ image:
   name: frontend
   tag: latest
 service:
-  name: frontend
+  name: frontend-svc
 ingress:
   name: frontend-ingress
   host:
     name: "api.example.com"
+replicas: 2

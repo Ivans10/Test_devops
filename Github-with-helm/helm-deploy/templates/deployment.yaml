@@ -1,0 +1,19 @@
+apiVersion: apps/v1  
+kind: Deployment     
+metadata:
+  name: docker-deployment   
+spec:
+  replicas: 1        
+  selector:
+    matchLabels:     
+      app: docker-deploy 
+  template:          
+    metadata:
+      labels:       
+        app: docker-deploy 
+    spec:
+      containers:    
+        - name: docker-container  
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}" 
+          ports:      
+            - containerPort: 3005 

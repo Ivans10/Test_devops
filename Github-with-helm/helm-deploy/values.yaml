@@ -1,0 +1,7 @@
+image:
+  repository: https://<url-image-repo>
+  tag: X.X.X
+
+service:
+  type: clusterIP
+  port: 80

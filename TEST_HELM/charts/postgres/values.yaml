@@ -17,4 +17,4 @@ db:
 service:
   metadata:
     name: postgres-svc
- 
+replicas: 2

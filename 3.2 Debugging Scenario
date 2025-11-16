@@ -1,0 +1,66 @@
+-------------------------------------------------------------------
+3.2 Debugging Scenario
+ Fornisci i comandi per diagnosticare e risolvere questi scenari:
+-------------------------------------------------------------------
+
+## 1. Pod in CrashLoopBackOff
+- Quali comandi usi per investigare?
+	kubectl logs -n "namespace" pods "pod-name"
+	kubectl descibe -n "namespace" pods "pod-name"
+	kubectl events -n "namespace" --for pod/"pod-name" --watch
+
+- Quali possibili cause per un'API backend?
+	- errori applicativi (che causa l'exit del container)
+	- fallimento dell'health check 
+	- errori di configurazione (variabili, path, pvc non in "bound status" ecc..)
+	- risorse non sufficienti (memoria, cpu request/limit)
+	- liveness/startup probes con stato "failure" (httpGet con codice di risposta 3xx o 5xx, valore basso dei campi "initialDelaySeconds o periodSeconds")
+
+## 2. Ingress non riceve traffico
+- Come verifichi la configurazione?
+	kubectl describe -n "namespace" ingress "ingress-name"
+		(nella configurazione verifico il nome dell'host e le rules oppure i paths verso il/i servizio/i )
+
+- Come testi routing?
+	kubectl get -n "namespace" ingress "ingress-name"
+	kubectl describe -n "namespace" service "service-name" -> check field: "LoadBalancer Ingress"
+	curl -H "HOST: hostname" "LoadBalancer Ingress" -v
+	nslookup hostname -> per verificare se il DNS viene risolto correttamente dove CN=LoadBalancer Ingress per comprendere se il DNS è associato al corretto CNAME
+
+
+## 3. MySQL non si connette
+- Come verifichi connectivity da backend pod?
+	kubectl exec -n "namespace" mysql-pod -it -- /bin/bash 
+		mysql -h <hostname> -u <username> -p
+
+- Quali network policies potrebbero bloccare?
+
+esempio 1:
+	- Network policy per bloccare qualsiasi ingresso
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: default-deny-ingress
+spec:
+  podSelector: {}
+  policyTypes:
+  - Ingress
+
+esempio 2:
+  	- Network policy che definisce ipBlock
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: access-mysql
+spec:
+  podSelector:
+    matchLabels:
+      app: mysql
+  policyTypes:
+  - Ingress
+  ingress:
+  - from:
+     - ipBlock:
+        cidr: 172.17.0.0/16
+        except:
+        - 172.17.1.0/24

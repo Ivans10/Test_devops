@@ -7,8 +7,9 @@ image:
   name: backend
   tag: latest
 service:
-  name: backend
+  name: backend-svc
 ingress:
   name: backend-ingress
   host:
     name: "localhost"
+replicas: 2

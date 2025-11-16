@@ -1,0 +1,28 @@
+#!/bin/bash
+DB_USER="user-postgresql"
+DB_NAME="name-db-postgresql"
+DB_HOST="localhost"
+DB_PORT="5432"
+
+DATE=$(date +"%Y%m%d")
+
+logger "INIZIO del backup "$DATE
+
+BACKUP_DIR="backup/postgres"
+mkdir -p $BACKUP_DIR
+cd $BACKUP_DIR
+
+logger "dump del db "$DB_NAME
+
+pg_dump -h $DB_HOST -p $DB_PORT -U $DB_USER $DB_NAME | gzip > $BACKUP_DIR-$DATE.sql.gz
+
+if [ $? -eq 0 ]; then
+  echo "Backup del database '$DB_NAME' completato con successo in '$BACKUP_DIR'"
+else
+  echo "Errore durante il backup del database '$DB_NAME'"
+fi
+
+pg_dump $db  > $db.sql
+gzip $db.sql
+
+logger "FINE del backup postgres"

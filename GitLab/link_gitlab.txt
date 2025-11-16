@@ -1,0 +1,7 @@
+# Practice
+    https://snorre.io/blog/2018-02-14-building-docker-images-with-gitlab-ci/
+    https://ewserver.di.unimi.it/gitlab/help/ci/docker/using_docker_build.md
+    https://spacelift.io/blog/docker-ci-cd
+
+youtube:
+    https://www.youtube.com/watch?v=4Klbfm4CixY Setup GitLab Container Registry | Push Docker Images Easily

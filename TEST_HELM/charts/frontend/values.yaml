@@ -14,3 +14,4 @@ ingress:
   name: frontend-ingress
   host:
     name: "api.example.com"
+replicas: 2
