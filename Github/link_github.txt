@@ -1,3 +1,0 @@
-# Practice:
-    http://medium.com/@ravipatel.it/automating-docker-image-creation-and-push-to-docker-hub-for-a-react-app-using-github-actions-7fa092751fc0
-    https://dev.to/msrabon/beginners-guide-build-push-and-deploy-docker-image-with-github-actions-aa7
