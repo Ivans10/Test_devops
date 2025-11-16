@@ -3,8 +3,6 @@ appName: postgres
 port: 80
 configmap:
   name: postgres-configmap-v1
-  data:
-    CUSTOM_HEADER: 'Test helm!'
 image:
   name: postgres
   tag: latest

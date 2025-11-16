@@ -1,0 +1,14 @@
+## 5. Esegui smoke tests di base
+Smoke tests minimali:
+- Verifica che tutti i pods siano running
+- Verifica che gli Ingress abbiano IP/DNS assegnato
+- Test curl endpoint /health dell'API
+- Verifica connessione MySQL da pod (psql -c "SELECT 1")
+- Verifica connessione Redis (redis-cli PING)
+	kubectl get pod -n dev[staging, prod]
+	kubectl describe ingress -n dev[staging, prod]
+	kubectl get ep -n dev[staging, prod]
+		curl http://endpoint:port/health
+	kubectl exec -n dev[staging, prod] deployment/postgres-dev [staging, prod] --container postgres-dev [staging, prod] -it -- psql -c "SELECT 1"
+	kubectl exec -n dev[staging, prod] deployment/redis-dev [staging, prod] --container postgres-dev [staging, prod] -it -- redis-cli PING
+

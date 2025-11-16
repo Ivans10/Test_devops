@@ -40,7 +40,7 @@ jobs:
         KUBECONFIG: ${{ github.workspace }}/kubeconfig
       run: |
        cd Github-with-helm/Github       
-       helm upgrade --install helm_deploy-test helm-deploy \
+       helm upgrade --install helm-deploy-test helm-deploy \
        --set image.repository=<test-devops-image-repository" \
        --set image.tag=${{ github.sha }} \
        --namespace default

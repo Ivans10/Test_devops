@@ -1,7 +1,19 @@
 FROM node:8-alpine
 WORKDIR /usr/src/app
+# Copia del file
 COPY ./package.json /usr/src/app/
-RUN npm install --production
-COPY ./dist /usr/src/app/
-COPY ./server.js /usr/src/app/
-CMD ["node" "server.js"]
+
+# Installazione pnpm
+RUN npm install -g pnpm
+
+# Copia codice sorgente
+COPY src /app/src
+
+# Intallazione dipendenze
+RUN pnpm install
+
+# Build del codice TypeScript
+RUN pnpm build
+
+# Run della action
+ENTRYPOINT ["node", ".index.js"]

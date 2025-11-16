@@ -2,20 +2,20 @@ FROM node:20-slim
 
 WORKDIR /app
 
-# Install pnpm
+# Installazione pnpm
 RUN npm install -g pnpm
 
-# Copy package files
+# Copia del file 
 COPY package.json pnpm-lock.yaml tsconfig.json /app
 
-# Copy source code
+# Copia codice sorgente
 COPY src /app/src
 
-# Install dependencies
+# Intallazione dipendenze
 RUN pnpm install
 
-# Build TypeScript code
+# Build del codice TypeScript
 RUN pnpm build
 
-# Run the action
+# Run della action
 ENTRYPOINT ["node", ".index.js"]

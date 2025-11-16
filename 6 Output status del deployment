@@ -1,0 +1,5 @@
+## 6. Output status del deployment
+	kubectl rollout status -n dev[staging, prod] deployment/backend-dev [staging, prod] 
+	kubectl rollout status -n dev[staging, prod] deployment/frontend-dev [staging, prod] 
+	kubectl rollout status -n dev[staging, prod] deployment/postgres-dev [staging, prod] 
+	kubectl rollout status -n dev[staging, prod] deployment/redis-dev [staging, prod] 

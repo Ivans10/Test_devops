@@ -1,0 +1,15 @@
+# Piano di Disaster Recovery di un db Postgresql
+
+1 - predisporre la replica del data base in "read-only"
+2 - schedulare il backup totale/incrementale ecc.. del data base 
+3 - salvaggio dei backup giornalieri su un NFS
+4 - per il recovery effettuare il restore dell'ultimo backup recuperato dal NFS
+    
+    #  pgbackrest --stanza=main restore --db-path=/var/lib/pgsql/data
+    #  chown -R postgres:postgres /var/lib/pgsql/data
+
+per il Point-in-Time Recovery aggiungere le seguenti righe nel file di configuazione "postgresql.conf:
+    # restore_command = 'cp /mnt/backup/wal/%f %p'
+    # recovery_target_time = 'AAAA-MM-GG HH:MM:SS UTC'
+    # touch /var/lib/pgsql/data/recovery.signal
+    # sudo systemctl start postgresql

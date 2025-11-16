@@ -4,9 +4,7 @@ stages: build
 cache:
   key: $CI_BUILD_REF
   paths:
-    - dist
-    - server.js
-    - package.json
+    - index.js
 
 build:
   stage: build
@@ -16,7 +14,6 @@ build:
     - npm run build
   artifacts:
     paths:
-      - dist
       - server.js
     expire_in: 1 hour
 
@@ -25,5 +22,5 @@ containerize:
   image: docker:<tag>
   script:
     - echo "$CI_REGISTRY_PASSWORD" | docker login $CI_REGISTRY -u $CI_REGISTRY_USER --password-stdin
-    - docker build -t user/my-typescript-image:latest
-    - docker push user/my-typescript-image:latest
+    - docker build -t user/<test-devops-image>:latest
+    - docker push user/<test-devops-image>:latest

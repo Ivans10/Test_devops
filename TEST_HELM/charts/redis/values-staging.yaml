@@ -6,5 +6,5 @@ image:
   tag: latest
 service:
   metadata:
-    name: postgres-svc
+    name: redis-postgres-svc
 replicas: 2

@@ -3,8 +3,6 @@ appName: frontend
 port: 80
 configmap:
   name: frontend-configmap-v1
-  data:
-    CUSTOM_HEADER: 'Test helm!'
 image:
   name: frontend
   tag: latest
