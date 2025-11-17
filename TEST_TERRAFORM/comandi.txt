@@ -1,8 +1,5 @@
 terraform init 
-<<<<<<< HEAD
-	terraform plan 
-	terraform apply  
-=======
+
 	terraform plan --vars-file vars/variables.tfvars
 	terraform apply  --vars-file vars/variables.tfvars 
->>>>>>> c01536c (update)
+
