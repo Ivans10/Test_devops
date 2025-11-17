@@ -1,5 +1,14 @@
-# https://spacelift.io/blog/terraform-eks
-# Configurazione del cluster EKS: modules/eks/kubernetes.tf 
+provider "aws" {
+  region = "eu-north-1"
+}
+
+terraform {
+  required_providers {
+    aws = {
+      source = "hashicorp/aws"
+    }
+  }
+}
 resource "aws_eks_cluster" "eks_test" {
   name = var.cluster_name
   role_arn = aws_iam_role.eks_cluster.arn
@@ -9,14 +18,12 @@ resource "aws_eks_cluster" "eks_test" {
   }
 }
 
-# Configurazione dei nodi worker (se necessario)
 resource "aws_eks_node_group" "worker" {
   cluster_name    = aws_eks_cluster.eks_test.name
   node_group_name = "${var.cluster_name}-workers"
   node_role_arn   = aws_iam_role.eks_node.arn
   subnet_ids      = var.subnet_ids
 
-# ASG EKS
   scaling_config {
     desired_size = 3
     max_size     = 5
@@ -24,7 +31,6 @@ resource "aws_eks_node_group" "worker" {
   }
 }
 
-# Ruolo IAM per il cluster
 resource "aws_iam_role" "eks_cluster" {
   name = "${var.cluster_name}-cluster-role"
 
@@ -42,7 +48,6 @@ resource "aws_iam_role" "eks_cluster" {
   })
 }
 
-# Ruolo IAM per i nodi worker
 resource "aws_iam_role" "eks_node" {
   name = "${var.cluster_name}-node-role"
 
@@ -60,13 +65,11 @@ resource "aws_iam_role" "eks_node" {
   })
 }
 
-# Policy IAM per il cluster
 resource "aws_iam_role_policy_attachment" "eks_cluster" {
   policy_arn = "arn:aws:iam::aws:policy/AmazonEKSClusterPolicy"
   role       = aws_iam_role.eks_cluster.name
 }
 
-# Policy IAM per i nodi worker
 resource "aws_iam_role_policy_attachment" "eks_node" {
   policy_arn = "arn:aws:iam::aws:policy/AmazonEKSServicePolicy"
   role       = aws_iam_role.eks_node.name
@@ -87,8 +90,6 @@ resource "aws_nat_gateway" "NGW" {
     Name = join("", [var.prefix_name, "-egress-ngw"])
   }
 
-  # To ensure proper ordering, it is recommended to add an explicit dependency
-  # on the Internet Gateway for the VPC.
   depends_on = [aws_internet_gateway.EGRESS-IGW]
 }
 
@@ -100,7 +101,6 @@ resource "aws_internet_gateway" "EGRESS-IGW" {
   })
 }
 
-# Route tables for the public subnets where there is the NAT 
 resource "aws_route_table" "EGRESS-PUBLIC-RT" {
   vpc_id = aws_vpc.EGRESS-VPC.id
   route {

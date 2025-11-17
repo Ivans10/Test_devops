@@ -1,4 +1,14 @@
-# https://github.com/paulboeck/medium-simple-terraform-rds
+provider "aws" {
+  region = "eu-north-1"
+}
+
+terraform {
+  required_providers {
+    aws = {
+      source = "hashicorp/aws"
+    }
+  }
+}
 resource "aws_security_group" "test_security_group" {
   name_prefix = "Test-"
   ingress {

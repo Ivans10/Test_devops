@@ -1,4 +1,14 @@
-# https://blog.kemanedonfack.com/leveraging-rds-proxy-for-centralized-database-access-with-terraform/
+provider "aws" {
+  region = "eu-north-1"
+}
+
+terraform {
+  required_providers {
+    aws = {
+      source = "hashicorp/aws"
+    }
+  }
+}
 data "aws_vpc" "infrastructure_vpc" {
   id = "vpc-xxxxxxxx"
 }
